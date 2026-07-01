@@ -18,7 +18,7 @@ from typing import Callable, List, Optional
 from engine import template_store as ts
 from engine.paths import TEMPLATES_DIR
 from gui import theme as T
-from gui.widgets import Button, IconButton, Label, Frame, SectionLabel
+from gui.widgets import Button, SectionLabel, prompt_text
 
 try:
     from PIL import Image, ImageTk
@@ -262,34 +262,4 @@ class TemplateManager(tk.Toplevel):
     # ── small prompt ────────────────────────────────────────────────────────────
 
     def _prompt(self, title: str, label: str, initial: str = "") -> Optional[str]:
-        dlg = tk.Toplevel(self)
-        dlg.title(title)
-        dlg.configure(bg=T.BG)
-        T.center_on_parent(dlg, self, 340, 150)
-        dlg.resizable(False, False)
-        dlg.transient(self)
-        dlg.grab_set()
-
-        Label(dlg, text=label).pack(pady=(18, 6), padx=20, anchor="w")
-        entry = tk.Entry(dlg, bg=T.BG3, fg=T.FG, insertbackground=T.FG,
-                         font=T.FONT, relief=tk.FLAT, highlightthickness=1,
-                         highlightcolor=T.ACCENT, highlightbackground=T.BORDER)
-        entry.insert(0, initial)
-        entry.pack(padx=20, fill=tk.X, ipady=5)
-        entry.focus_set()
-        entry.select_range(0, tk.END)
-
-        result = {"value": None}
-
-        def _ok():
-            result["value"] = entry.get().strip()
-            dlg.destroy()
-
-        row = Frame(dlg)
-        row.pack(pady=12)
-        Button(row, "OK", command=_ok, variant="success").pack(side=tk.LEFT, padx=4)
-        Button(row, "Cancel", command=dlg.destroy, variant="ghost").pack(side=tk.LEFT, padx=4)
-        dlg.bind("<Return>", lambda _: _ok())
-        dlg.bind("<Escape>", lambda _: dlg.destroy())
-        self.wait_window(dlg)
-        return result["value"] or None
+        return prompt_text(self, title, label, initial)

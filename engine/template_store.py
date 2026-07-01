@@ -209,3 +209,15 @@ def rename_file(
 def delete_file(name: str, templates_dir: Path = TEMPLATES_DIR) -> None:
     """Delete a template file (no error if it's already gone)."""
     (templates_dir / name).unlink(missing_ok=True)
+
+
+def unique_name(name: str, templates_dir: Path = TEMPLATES_DIR) -> str:
+    """Return *name*, or name_2/name_3/... if a file already exists, so a new
+    capture never silently overwrites an existing template."""
+    if not (templates_dir / name).exists():
+        return name
+    stem, ext = Path(name).stem, Path(name).suffix
+    i = 2
+    while (templates_dir / f"{stem}_{i}{ext}").exists():
+        i += 1
+    return f"{stem}_{i}{ext}"

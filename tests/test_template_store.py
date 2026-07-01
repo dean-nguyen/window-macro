@@ -127,6 +127,14 @@ def test_delete_file_is_idempotent(tmp_path):
     ts.delete_file("x.png", tmp_path)  # already gone → no error
 
 
+def test_unique_name_avoids_overwrite(tmp_path):
+    assert ts.unique_name("new.png", tmp_path) == "new.png"  # nothing there yet
+    _png(tmp_path / "shot.png")
+    assert ts.unique_name("shot.png", tmp_path) == "shot_2.png"
+    _png(tmp_path / "shot_2.png")
+    assert ts.unique_name("shot.png", tmp_path) == "shot_3.png"
+
+
 def test_find_orphans(tmp_path):
     _png(tmp_path / "used.png")
     _png(tmp_path / "orphan.png")
